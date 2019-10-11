@@ -20,11 +20,10 @@ public class CreateData {
 
 	public static void main(String[] args) {
 		ArrayList<Exper> list = new ArrayList<>();
-		String folderBase = "/root/mongo/data/"; //root directory that each database is created
-		String idBase = "/root/mongo/idsnew/"; // directory where documentids saved
+//		String folderBase = "/root/mongo/data/"; //root directory that each database is created
+//		String idBase = "/root/mongo/idsnew/"; // directory where documentids saved
 
-		
-		//Constant disk size
+		// Constant disk size
 		list.add(new Exper("40-13m", 40, 13000000));
 		list.add(new Exper("80-13m-2", 40 * 2, 13000000 / 2));
 		list.add(new Exper("160-13m-4", 40 * 4, 13000000 / 4));
@@ -39,7 +38,6 @@ public class CreateData {
 		list.add(new Exper("80-32m", 80, 2000000 * 16));
 		list.add(new Exper("80-64m", 80, 2000000 * 32));
 
-		
 		// change document size (40-13m also included from constant disk size)
 		list.add(new Exper("80-13m", 40 * 2, 13000000));
 		list.add(new Exper("160-13m", 40 * 4, 13000000));
@@ -69,16 +67,15 @@ public class CreateData {
 		try {
 			for (Exper exper : list) {
 				List<BasicDBObject> documents1 = new ArrayList<>();
-				File dir = new File(folderBase + exper.name);
+				File dir = new File(Const.FOLDER_BASE + exper.name);
 				dir.mkdir();
 				// change according to the mongodb instance
-				ProcessBuilder p1 = new ProcessBuilder("/root/mongo/4.2/mongo/build/opt/mongo/mongod32orig", "--config",
-						"/root/mongo/mongo.conf", "--dbpath", folderBase + exper.name, "--bind_ip_all", "--fork",
-						"--logpath", "/root/log/mongodb.log");
+				ProcessBuilder p1 = new ProcessBuilder(Const.MONGOD_LOC, "--config", Const.CONFIG_LOC, "--dbpath",
+						Const.FOLDER_BASE + exper.name, "--bind_ip_all", "--fork", "--logpath", Const.LOG_LOC);
 				Process p;
 				p = p1.start();
 				int retval1 = p.waitFor();
-				System.out.println(folderBase + exper.name);
+				System.out.println(Const.FOLDER_BASE + exper.name);
 				Mongo mongo = new Mongo("localhost", 27017);
 				DB db = mongo.getDB("final");// movies
 
@@ -112,7 +109,7 @@ public class CreateData {
 				// ArrayList al = new ArrayList()
 				// do something with your ArrayList
 				FileOutputStream fos;
-				fos = new FileOutputStream(idBase + exper.name);
+				fos = new FileOutputStream(Const.ID_BASE + exper.name);
 				ObjectOutputStream oos = new ObjectOutputStream(fos);
 				oos.writeObject(al);
 				oos.close();

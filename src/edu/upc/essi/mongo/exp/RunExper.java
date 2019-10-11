@@ -26,19 +26,16 @@ import com.mongodb.Mongo;
 //import ch.qos.logback.classic.Logger;
 //import ch.qos.logback.classic.LoggerContext;
 
-
 public class RunExper {
 
 	public static void main(String[] args) {
-		String url = "jdbc:postgresql://10.55.0.32/postgres";
+		String url = "jdbc:postgresql://localhost/postgres";
 		String user = "postgres";
 		String password = "user";
 //		LoggerContext loggerContext = (LoggerContext) LoggerFactory.getILoggerFactory();
 //		Logger rootLogger = loggerContext.getLogger("org.mongodb.driver");
 //		rootLogger.setLevel(Level.ERROR);
 		ArrayList<Exper> list = new ArrayList<>();
-		String folderBase = "/root/mongo/data/";
-		String idBase = "/root/mongo/idsnew/";
 
 		list.add(new Exper("40-13m", 40, 13000000));
 		list.add(new Exper("80-13m-2", 40 * 2, 13000000 / 2));
@@ -62,17 +59,16 @@ public class RunExper {
 		try {
 			Connection conn = DriverManager.getConnection(url, user, password);
 
-			String sql = "INSERT INTO public.\"NewExp4232\"(stname, iter, run, col) VALUES (?, ?, ?, ?::JSON);";
+			String sql = "INSERT INTO public.\"NewExp\"(stname, iter, run, col) VALUES (?, ?, ?, ?::JSON);";
 			PreparedStatement ps = conn.prepareStatement(sql);
 			for (Exper exper : list) {
 				System.out.println(exper.name);
-				List l1 = CSVUtils.fillIds(idBase + exper.name);
+				List l1 = CSVUtils.fillIds(Const.ID_BASE + exper.name);
 
-				for (int k = 0; k < 7; k++) {
+				for (int k = 0; k < 10; k++) {
 					System.out.println(k);
-					ProcessBuilder p1 = new ProcessBuilder("/root/mongo/4.2/mongo/build/opt/mongo/mongod32", "--config",
-							"/root/mongo/mongo.conf", "--dbpath", folderBase + exper.name, "--bind_ip_all", "--fork",
-							"--logpath", "/root/log/mongodb.log");
+					ProcessBuilder p1 = new ProcessBuilder(Const.MONGOD_LOC, "--config", Const.CONFIG_LOC, "--dbpath",
+							Const.FOLDER_BASE + exper.name, "--bind_ip_all", "--fork", "--logpath", Const.LOG_LOC);
 					Process p;
 					p = p1.start();
 					int retval1 = p.waitFor();
